@@ -1,7 +1,7 @@
 package com.mrmccue.keys.controller
 
 import com.mrmccue.keys.model
-import com.mrmccue.keys.model.Phase.{GoldPlaying, SilverPlaying}
+import com.mrmccue.keys.model.Phase.Playing
 import com.mrmccue.keys.model.Team.{Gold, Silver}
 import com.mrmccue.keys.model._
 import com.mrmccue.keys.view.{KeysView, ViewActionListener}
@@ -25,7 +25,7 @@ final class KeysController(private val game: KeysGame, private val view: KeysVie
     game.unlockedKey(position) match {
       case Some(key) =>
         (game.phase, key.team) match {
-          case (GoldPlaying, Gold) | (SilverPlaying, Silver) =>
+          case (Playing(Gold), Gold) | (Playing(Silver), Silver) =>
             val directionMarkers = key.facing.allOthers
               .map(dir => (dir.move(position), dir))
               .filter(pair => game.allLocations.contains(pair._1))
@@ -43,8 +43,8 @@ final class KeysController(private val game: KeysGame, private val view: KeysVie
       case Some(p) =>
         if (game.validMovesOfKey(p).contains(position)) {
           game.phase match  {
-            case GoldPlaying => println(game.move(Gold, p, position))
-            case SilverPlaying => println(game.move(Silver, p, position))
+            case Playing(Gold) => println(game.move(Gold, p, position))
+            case Playing(Silver) => println(game.move(Silver, p, position))
             case _ =>
           }
         }
@@ -56,8 +56,8 @@ final class KeysController(private val game: KeysGame, private val view: KeysVie
                 val dir = pair._2
                 if (position == pos) {
                   game.phase match  {
-                    case GoldPlaying => println(game.rotate(Gold, p, dir))
-                    case SilverPlaying => println(game.rotate(Silver, p, dir))
+                    case Playing(Gold) => println(game.rotate(Gold, p, dir))
+                    case Playing(Silver) => println(game.rotate(Silver, p, dir))
                     case _ =>
                   }
                 }

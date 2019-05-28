@@ -9,7 +9,7 @@ import scala.util.control.Breaks.{break, breakable}
 private[model] final class KeysGameImpl extends KeysGame {
   private var unlockedKeys: mutable.Map[Position, UnlockedKey] = initialUnlockedKeys
   private var lockedKeys: mutable.Map[Position, LockedKey] = mutable.Map()
-  private var _phase: Phase = GoldPlaying
+  private var _phase: Phase = Playing(Gold)
 
   /**
     * The starting configuration for the locked and unlocked keys.
@@ -33,7 +33,7 @@ private[model] final class KeysGameImpl extends KeysGame {
   override def reset(): Unit = {
     this.unlockedKeys = initialUnlockedKeys
     this.lockedKeys = mutable.Map()
-    this._phase = GoldPlaying
+    this._phase = Playing(Gold)
   }
 
   /**
@@ -57,8 +57,8 @@ private[model] final class KeysGameImpl extends KeysGame {
     val moves: mutable.Set[Position] = mutable.Set()
     unlockedKeys.get(at) match {
       case Some(key) =>
-        if (this.phase == GoldPlaying && key.team == Gold
-          || this.phase == SilverPlaying && key.team == Silver) {
+        if (this.phase == Playing(Gold) && key.team == Gold
+          || this.phase == Playing(Silver) && key.team == Silver) {
           var nextLoc = key.facing.move(at)
 
           breakable {
@@ -113,7 +113,7 @@ private[model] final class KeysGameImpl extends KeysGame {
 
   override def move(asTeam: Team, from: Position, to: Position): MoveResult = {
     (asTeam, this.phase) match {
-      case (Gold, GoldPlaying) | (Silver, SilverPlaying) =>
+      case (Gold, Playing(Gold)) | (Silver, Playing(Silver)) =>
         val unlockedKeySrc = this.unlockedKeys.get(from)
         val lockedKeyDest = this.lockedKeys.get(to)
         val unlockedKeyDest = this.unlockedKeys.get(to)
@@ -148,18 +148,18 @@ private[model] final class KeysGameImpl extends KeysGame {
           this._phase = {
             if (shouldEnterRespawn) {
               teamPlaying match {
-                case Gold => GoldRespawning
-                case Silver => SilverRespawning
+                case Gold => Respawning(Gold)
+                case Silver => Respawning(Silver)
               }
             }
             else {
               this.winningTeam match {
-                case Some(Gold) => GoldWin
-                case Some(Silver) => SilverWin
+                case Some(Gold) => Win(Gold)
+                case Some(Silver) => Win(Silver)
                 case None =>
                   teamPlaying match {
-                    case Gold => SilverPlaying
-                    case Silver => GoldPlaying
+                    case Gold => Playing(Silver)
+                    case Silver => Playing(Gold)
                   }
               }
             }
@@ -177,7 +177,7 @@ private[model] final class KeysGameImpl extends KeysGame {
 
   override def rotate(asTeam: Team, at: Position, toFace: Direction): RotateResult = {
     (asTeam, this.phase) match {
-      case (Gold, GoldPlaying) | (Silver, SilverPlaying) =>
+      case (Gold, Playing(Gold)) | (Silver, Playing(Silver)) =>
         this.unlockedKeys.get(at) match {
           case Some(unlockedKey) =>
             if (unlockedKey.team != asTeam) {
@@ -189,8 +189,8 @@ private[model] final class KeysGameImpl extends KeysGame {
             else {
               this.unlockedKeys.put(at, unlockedKey.copy(facing = toFace))
               this._phase = asTeam match {
-                case Gold => SilverPlaying
-                case Silver => GoldPlaying
+                case Gold => Playing(Silver)
+                case Silver => Playing(Gold)
               }
               Success
             }
@@ -204,7 +204,7 @@ private[model] final class KeysGameImpl extends KeysGame {
 
   override def respawn(asTeam: Team, at: Position): RespawnResult = {
     (asTeam, this.phase) match {
-      case (Gold, GoldRespawning) | (Silver, SilverRespawning)  =>
+      case (Gold, Respawning(Gold)) | (Silver, Respawning(Silver))  =>
         this.unlockedKeys.get(at) match {
           case Some(_) =>
             SpaceAlreadyOccupied
@@ -212,8 +212,8 @@ private[model] final class KeysGameImpl extends KeysGame {
             if (this.respawnPoints(asTeam).contains(at)) {
               this.unlockedKeys.put(at, UnlockedKey.default(asTeam))
               this._phase = asTeam match {
-                case Gold => SilverPlaying
-                case Silver => GoldPlaying
+                case Gold => Playing(Silver)
+                case Silver => Playing(Gold)
               }
               Success
             }

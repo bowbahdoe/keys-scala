@@ -1,31 +1,17 @@
 package com.mrmccue.keys.model
 
-sealed trait Phase {
-  def teamPlaying: Option[Team]
-}
+sealed trait Phase
 
 object Phase {
-  case object GoldPlaying extends Phase {
-    override def teamPlaying: Option[Team] = Some(Team.Gold)
+  case class Playing(team: Team) extends Phase {
+    override def toString: String = s"Playing { team: $team }"
   }
 
-  case object SilverPlaying extends Phase {
-    override def teamPlaying: Option[Team] = Some(Team.Silver)
+  case class Respawning(team: Team) extends Phase {
+    override def toString: String = s"Respawning { team: $team }"
   }
 
-  case object GoldRespawning extends Phase {
-    override def teamPlaying: Option[Team] = None
-  }
-
-  case object SilverRespawning extends Phase {
-    override def teamPlaying: Option[Team] = None
-  }
-
-  case object GoldWin extends Phase {
-    override def teamPlaying: Option[Team] = None
-  }
-
-  case object SilverWin extends Phase {
-    override def teamPlaying: Option[Team] = None
+  case class Win(team: Team) extends Phase {
+    override def toString: String = s"Win { team: $team }"
   }
 }
