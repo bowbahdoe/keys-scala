@@ -117,12 +117,7 @@ private[model] final class KeysGameImpl extends KeysGame {
         val unlockedKeySrc = this.unlockedKeys.get(from)
         val lockedKeyDest = this.lockedKeys.get(to)
         val unlockedKeyDest = this.unlockedKeys.get(to)
-        val teamPlaying = this.phase match {
-          case GoldPlaying => Gold
-          case SilverPlaying => Silver
-          case _ => throw new AssertionError("Unreachable")
-        }
-
+        val teamPlaying = asTeam // same as phase as per match case
         var shouldEnterRespawn = false
 
         if (unlockedKeySrc.isEmpty) {
@@ -193,10 +188,9 @@ private[model] final class KeysGameImpl extends KeysGame {
             }
             else {
               this.unlockedKeys.put(at, unlockedKey.copy(facing = toFace))
-              this._phase = this.phase match {
-                case GoldPlaying => SilverPlaying
-                case SilverPlaying => GoldPlaying
-                case _ => throw new AssertionError("Unreachable")
+              this._phase = asTeam match {
+                case Gold => SilverPlaying
+                case Silver => GoldPlaying
               }
               Success
             }
@@ -217,10 +211,9 @@ private[model] final class KeysGameImpl extends KeysGame {
           case None =>
             if (this.respawnPoints(asTeam).contains(at)) {
               this.unlockedKeys.put(at, UnlockedKey.default(asTeam))
-              this._phase = this.phase match {
-                case GoldRespawning => SilverPlaying
-                case SilverRespawning => GoldPlaying
-                case _ => throw new AssertionError("Unreachable")
+              this._phase = asTeam match {
+                case Gold => SilverPlaying
+                case Silver => GoldPlaying
               }
               Success
             }
