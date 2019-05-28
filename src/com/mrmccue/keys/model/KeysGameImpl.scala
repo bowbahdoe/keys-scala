@@ -1,5 +1,7 @@
 package com.mrmccue.keys.model
 
+import com.mrmccue.keys.model.Team.{Gold, Silver}
+
 import scala.collection.mutable
 import scala.util.control.Breaks.{break, breakable}
 

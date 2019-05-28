@@ -1,117 +1,6 @@
 package com.mrmccue.keys
 
-import com.mrmccue.keys.model._
-
 package object model {
-  /**
-    * A direction that an unlocked key might face.
-    */
-  sealed trait Direction {
-    /**
-      * @return All of the directions that are not this direction.
-      */
-    def allOthers: Set[Direction] = {
-      val dirs: Set[Direction] = Set(
-        North,
-        South,
-        East,
-        West,
-        NorthEast,
-        NorthWest,
-        SouthEast,
-        SouthWest
-      )
-      dirs - this
-    }
-
-    /**
-      * Moves a position in the direction by 1 "square"
-      * @param position The position to move from.
-      * @return A new position.
-      */
-    def move(position: Position): Position
-  }
-
-  case object North extends Direction {
-    override def toString: String = "↑"
-
-    override def move(position: Position): Position =
-      position.copy(y = position.y - 1)
-  }
-
-  case object South extends Direction {
-    override def toString: String = "↓"
-
-    override def move(position: Position): Position =
-      position.copy(y = position.y + 1)
-  }
-
-  case object East extends Direction {
-    override def toString: String = "→"
-
-    override def move(position: Position): Position =
-      position.copy(x = position.x + 1)
-  }
-
-  case object West extends Direction {
-    override def toString: String = "←"
-
-    override def move(position: Position): Position =
-      position.copy(x = position.x - 1)
-  }
-
-  case object NorthEast extends Direction {
-    override def toString: String = "↗"
-
-    override def move(position: Position): Position =
-      North.move(East.move(position))
-  }
-
-  case object NorthWest extends Direction {
-    override def toString: String = "↖"
-
-    override def move(position: Position): Position =
-      North.move(West.move(position))
-  }
-
-  case object SouthEast extends Direction {
-    override def toString: String = "↘"
-
-    override def move(position: Position): Position =
-      South.move(East.move(position))
-  }
-
-  case object SouthWest extends Direction {
-    override def toString: String = "↙"
-
-    override def move(position: Position): Position =
-      South.move(West.move(position))
-  }
-
-  /**
-    * A Position.
-    * @param x The x-coord of the position.
-    * @param y The y-coord of the position.
-    */
-  final case class Position(x: Int, y: Int) {
-    override def toString: String = s"Position { x: $x, y: $y }"
-  }
-
-  sealed trait Team {
-    /**
-      * The team opposing the given team (gold for silver, silver for gold)
-      * @return The team opposing another
-      */
-    def opposing: Team
-  }
-
-  case object Gold extends Team {
-    override def opposing: Team = Silver
-  }
-
-  case object Silver extends Team {
-    override def opposing: Team = Gold
-  }
 
   sealed trait Phase {
     def teamPlaying: Option[Team]
@@ -123,11 +12,11 @@ package object model {
   sealed trait WinPhase extends Phase
 
   case object GoldPlaying extends PlayPhase {
-    override def teamPlaying: Option[Team] = Some(Gold)
+    override def teamPlaying: Option[Team] = Some(Team.Gold)
   }
 
   case object SilverPlaying extends PlayPhase {
-    override def teamPlaying: Option[Team] = Some(Silver)
+    override def teamPlaying: Option[Team] = Some(Team.Silver)
   }
 
   case object GoldRespawning extends RespawnPhase {
@@ -214,8 +103,8 @@ package object model {
   object UnlockedKey {
     private[model] def default(team: Team): UnlockedKey = {
       team match {
-        case Gold => UnlockedKey(team=Gold, facing=South)
-        case Silver => UnlockedKey(team=Silver, facing=North)
+        case Team.Gold => UnlockedKey(team=Team.Gold, facing=Direction.South)
+        case Team.Silver => UnlockedKey(team=Team.Silver, facing=Direction.North)
       }
     }
   }

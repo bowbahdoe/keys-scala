@@ -8,6 +8,8 @@ import java.awt._
 import java.awt.event.{MouseEvent, MouseListener}
 import java.awt.geom.{AffineTransform, Point2D}
 
+import com.mrmccue.keys.model.Direction._
+import com.mrmccue.keys.model.Team.{Gold, Silver}
 import javax.swing.JPanel
 
 import scala.collection.mutable

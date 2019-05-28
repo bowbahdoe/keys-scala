@@ -1,6 +1,7 @@
 package com.mrmccue.keys.controller
 
 import com.mrmccue.keys.model
+import com.mrmccue.keys.model.Team.{Gold, Silver}
 import com.mrmccue.keys.model._
 import com.mrmccue.keys.view.{KeysView, ViewActionListener}
 
