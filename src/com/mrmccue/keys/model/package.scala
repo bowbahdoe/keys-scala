@@ -1,40 +1,6 @@
 package com.mrmccue.keys
 
 package object model {
-
-  sealed trait Phase {
-    def teamPlaying: Option[Team]
-  }
-
-
-  sealed trait PlayPhase extends Phase
-  sealed trait RespawnPhase extends Phase
-  sealed trait WinPhase extends Phase
-
-  case object GoldPlaying extends PlayPhase {
-    override def teamPlaying: Option[Team] = Some(Team.Gold)
-  }
-
-  case object SilverPlaying extends PlayPhase {
-    override def teamPlaying: Option[Team] = Some(Team.Silver)
-  }
-
-  case object GoldRespawning extends RespawnPhase {
-    override def teamPlaying: Option[Team] = None
-  }
-
-  case object SilverRespawning extends RespawnPhase {
-    override def teamPlaying: Option[Team] = None
-  }
-
-  case object GoldWin extends WinPhase {
-    override def teamPlaying: Option[Team] = None
-  }
-
-  case object SilverWin extends WinPhase {
-    override def teamPlaying: Option[Team] = None
-  }
-
   /**
     * The result of trying to move a key from one position to another.
     */
@@ -89,25 +55,4 @@ package object model {
     * The selected position already has a piece in it.
     */
   case object SpaceAlreadyOccupied extends RespawnResult
-
-  final case class LockedKey(team: Team) {
-    override def toString: String = s"LockedKey { team: $team }"
-  }
-
-  final case class UnlockedKey(team: Team, facing: Direction) {
-    override def toString: String = s"UnlockedKey { team: $team, facing: $facing }"
-
-    def locked: LockedKey = LockedKey(team)
-  }
-
-  object UnlockedKey {
-    private[model] def default(team: Team): UnlockedKey = {
-      team match {
-        case Team.Gold => UnlockedKey(team=Team.Gold, facing=Direction.South)
-        case Team.Silver => UnlockedKey(team=Team.Silver, facing=Direction.North)
-      }
-    }
-  }
-
-
 }

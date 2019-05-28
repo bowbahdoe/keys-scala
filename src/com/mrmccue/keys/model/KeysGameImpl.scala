@@ -1,5 +1,6 @@
 package com.mrmccue.keys.model
 
+import com.mrmccue.keys.model.Phase._
 import com.mrmccue.keys.model.Team.{Gold, Silver}
 
 import scala.collection.mutable
