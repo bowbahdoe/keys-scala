@@ -1,7 +1,5 @@
 package com.mrmccue.keys.model
 
-import scala.collection.mutable
-
 /**
   * A game of keys represented by some mutable board.
   */
